@@ -5,7 +5,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Sendy API Endpoint Connection Test</h1>
+    <h1>
+        <img src="https://dlgo7qh09pizs.cloudfront.net/images/sendy-logo.png" alt="Sendy Logo" style="height:32px;vertical-align:middle;margin-right:10px;"><br><br>
+        API Endpoint Connection Tester
+    </h1>
     
     <form method="POST">
         <div class="form-group">
@@ -33,11 +36,14 @@
         </div>
         
         <button type="submit" name="action" value="test_connection">Test Connection</button>
+        
         <button type="submit" name="action" value="get_campaigns">Get Campaigns</button>
         <button type="submit" name="action" value="campaign_summary">Campaign Summary</button>
         <button type="submit" name="action" value="campaign_clicks">Campaign Clicks</button>
+
         <button type="submit" name="action" value="get_lists">Get All Lists</button>
         <button type="submit" name="action" value="get_brands">Get All Brands</button>
+
         <button type="submit" name="action" value="subscriber_status">Check Subscriber Status</button>
 
     </form>
