@@ -2,29 +2,20 @@
 <html>
 <head>
     <title>Sendy API Sandbox</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .form-group { margin: 15px 0; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="url"] { width: 100%; padding: 8px; }
-        button { background: #0073aa; color: white; padding: 10px 20px; border: none; cursor: pointer; }
-        .result { background: #f1f1f1; padding: 15px; margin: 15px 0; border-left: 4px solid #0073aa; }
-        .error { border-left-color: #dc3232; }
-        pre { background: #fff; padding: 10px; overflow-x: auto; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Sendy API Sandbox</h1>
+    <h1>Sendy API Endpoint Connection Test</h1>
     
     <form method="POST">
         <div class="form-group">
-            <label>Sendy Installation URL:</label>
-            <input type="url" name="api_url" value="<?= $_POST['api_url'] ?? 'https://your-sendy-domain.com' ?>" placeholder="https://your-sendy-domain.com">
+            <label>Sendy Application URL:</label>
+            <input type="url" name="api_url" value="<?= $_POST['api_url'] ?? 'http://your-sendy-url' ?>" placeholder="http://your-sendy-url">
         </div>
         
         <div class="form-group">
             <label>API Key:</label>
-            <input type="text" name="api_key" value="<?= $_POST['api_key'] ?? '' ?>" placeholder="Your Sendy API key">
+            <input type="text" name="api_key" value="<?= $_POST['api_key'] ?? '' ?>" placeholder="XXXXXXXXXXXXXXXXXX">
         </div>
         
         <div class="form-group">
@@ -35,6 +26,10 @@
         <div class="form-group">
             <label>Campaign ID (for campaign-specific tests):</label>
             <input type="text" name="campaign_id" value="<?= $_POST['campaign_id'] ?? '' ?>" placeholder="Campaign ID">
+        </div>
+        <div class="form-group">
+            <label>Test Email Address:</label>
+            <input type="email" name="test_email" value="<?= $_POST['test_email'] ?? '' ?>" placeholder="test@example.com">
         </div>
         
         <button type="submit" name="action" value="test_connection">Test Connection</button>
@@ -60,22 +55,27 @@
         
         switch($action) {
             case 'test_connection':
-                if($list_id) {
-                    $result = sendy_request($api_url . '/api/subscribers/active-subscriber-count.php', [
-                        'api_key' => $api_key,
-                        'list_id' => $list_id
-                    ]);
-                } else {
-                    echo "<p>Testing basic API connection...</p>";
-                    $result = sendy_request($api_url . '/api/campaigns/get-campaigns.php', [
-                        'api_key' => $api_key
-                    ]);
-                }
+                $result = sendy_request($api_url . '/api/subscribers/active-subscriber-count.php', [
+                    'api_key' => $api_key,
+                    'list_id' => $list_id ?: 'test' // provide a dummy list_id
+                ]);
                 break;
                 
             case 'get_campaigns':
                 $result = sendy_request($api_url . '/api/campaigns/get-campaigns.php', [
                     'api_key' => $api_key
+                ]);
+                break;
+
+            case 'subscriber_status':
+                if(!$list_id || !$_POST['test_email']) {
+                    echo "<p class='error'>Both List ID and email required</p>";
+                    break;
+                }
+                $result = sendy_request($api_url . '/api/subscribers/subscription-status.php', [
+                    'api_key' => $api_key,
+                    'email' => $_POST['test_email'],
+                    'list_id' => $list_id
                 ]);
                 break;
                 
@@ -139,6 +139,7 @@
     }
     
     function sendy_request($url, $data) {
+        echo "<p><strong>Trying URL:</strong> " . $url . "</p>"; // DEBUG LINE
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
