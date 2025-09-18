@@ -37,21 +37,25 @@
         </div>
 
         <div class="form-group">
+            <label>Brand ID (for lists):</label>
+            <input type="text" name="brand_id" value="<?= $_POST['brand_id'] ?? '' ?>" placeholder="Brand ID">
+        </div>
+
+        <div class="form-group">
             <label>Test Email Address:</label>
             <input type="text" name="test_email" value="<?= $_POST['test_email'] ?? '' ?>" placeholder="user@address.com">
         </div>
 
         <button type="submit" name="action" value="test_connection" class="connection-test">Test Connection</button>
         <hr>
-
+        <button type="submit" name="action" value="test_connection">Get List Subscribers</button>
         <button type="submit" name="action" value="subscriber_status">Check Subscriber Status</button>
-
-        
-        <button type="submit" name="action" value="get_campaigns">Get Campaigns</button>
-        <button type="submit" name="action" value="campaign_summary">Campaign Summary</button>
-        <button type="submit" name="action" value="campaign_clicks">Campaign Clicks</button>
         <button type="submit" name="action" value="get_lists">Get All Lists</button>
-        <!-- <button type="submit" name="action" value="get_brands">Get All Brands</button> -->
+        <button type="submit" name="action" value="get_brands">Get All Brands</button>
+        <button type="submit" name="action" value="get_campaigns">Get Campaigns</button>
+        <!-- <button type="submit" name="action" value="campaign_summary">Campaign Summary</button> -->
+        <!-- <button type="submit" name="action" value="campaign_clicks">Campaign Clicks</button> -->
+  
 
     </form>
 
@@ -116,13 +120,13 @@
                 break;
 
             case 'get_lists':
-                if(!$list_id) {
-                    echo "<p class='error'>Brand ID required - use List ID field for now</p>";
+                if(!isset($_POST['brand_id']) || empty($_POST['brand_id'])) {
+                    echo "<p class='error'>Brand ID required</p>";
                     break;
                 }
                 $result = sendy_request($api_url . '/api/lists/get-lists.php', [
                     'api_key' => $api_key,
-                    'brand_id' => $list_id // using list_id field as brand_id for testing
+                    'brand_id' => $_POST['brand_id']
                 ]);
                 break;
 
@@ -177,20 +181,20 @@
             'parsed' => parse_sendy_response($response)
         ];
     }
-    
+
     function parse_sendy_response($response) {
-        // Sendy often returns plain text responses
-        if(is_numeric($response)) {
-            return (int)$response;
-        }
-        
-        // Try to detect if it's JSON
+        // Try JSON first (for lists/brands)
         $json = json_decode($response, true);
         if(json_last_error() === JSON_ERROR_NONE) {
             return $json;
         }
         
-        // Check for common Sendy error messages
+        // Handle numeric responses
+        if(is_numeric($response)) {
+            return (int)$response;
+        }
+        
+        // Handle error messages
         $errors = ['No data passed', 'Invalid API key', 'List does not exist', 'Campaign does not exist'];
         if(in_array(trim($response), $errors)) {
             return ['error' => trim($response)];

@@ -11,6 +11,20 @@ A simple utility for testing the Sendy API connection and endpoints. A prototype
 - `/api/campaigns/summary.php`
 - `/api/subscribers/subscription-status.php`
 
+```
+// Campaign performance summary
+/api/campaigns/summary.php
+// Returns: "1250,45,12,8" (sent,opens,clicks,unsubscribes)
+
+// Detailed click tracking  
+/api/campaigns/clicks.php
+// Returns detailed click data per link
+
+// Campaign opens
+/api/campaigns/opens.php  
+// Returns who opened when
+```
+
 ### How to run:
 
 `php -S localhost:8080`
