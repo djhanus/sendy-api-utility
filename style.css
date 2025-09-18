@@ -1,8 +1,34 @@
-body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; font-size: 14px; line-height: 1.2; background: #fafafa;  }
+
+.header { display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px; }
+
+h1 { font-size: 22px; }
+
 .form-group { margin: 15px 0; }
+
+h2 { color: #666; }
+
 label { display: block; margin-bottom: 5px; font-weight: bold; }
-input[type="text"], input[type="url"] { width: 100%; padding: 8px; }
+
+input[type="text"], input[type="url"] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+
 button { background: #0073aa; color: white; padding: 10px 20px; margin: 10px auto; border: none; cursor: pointer; }
+
+button.connection-test { background: #28a745; }
+
 .result { background: #f1f1f1; padding: 15px; margin: 15px 0; border-left: 4px solid #0073aa; }
+
 .error { border-left-color: #dc3232; }
+
 pre { background: #fff; padding: 10px; overflow-x: auto; }
+
+pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: 'Fira Mono', 'Consolas', 'Menlo', 'Monaco', monospace;
+    border: 1px dotted #666;
+    border-radius: 6px;
+    background: #ffffff;
+    padding: 24px;
+    color: rgb(31, 31, 31);
+}

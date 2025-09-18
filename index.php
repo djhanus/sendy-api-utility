@@ -1,53 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sendy API Sandbox</title>
+    <title>Sendy API Utility</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>
-        <img src="https://dlgo7qh09pizs.cloudfront.net/images/sendy-logo.png" alt="Sendy Logo" style="height:32px;vertical-align:middle;margin-right:10px;"><br><br>
-        API Endpoint Connection Tester
-    </h1>
-    
+
+    <div class="header"> 
+        <img src="https://dlgo7qh09pizs.cloudfront.net/images/sendy-logo.png" alt="Sendy Logo" style="height:32px;vertical-align:middle;margin-right:10px;">
+
+        <h1>
+            API Utility
+        </h1>
+    </div>
+
+    <h2>API Connection Test</h2>
     <form method="POST">
         <div class="form-group">
-            <label>Sendy Application URL:</label>
-            <input type="url" name="api_url" value="<?= $_POST['api_url'] ?? 'http://your-sendy-url' ?>" placeholder="http://your-sendy-url">
+            <label>Application URL (Base URL):</label>
+            <input type="url" name="api_url" value="<?= $_POST['api_url'] ?? 'http://your-sendy-url.com' ?>" placeholder="http://your-sendy-url.com">
         </div>
         
         <div class="form-group">
             <label>API Key:</label>
             <input type="text" name="api_key" value="<?= $_POST['api_key'] ?? '' ?>" placeholder="XXXXXXXXXXXXXXXXXX">
         </div>
-        
+
         <div class="form-group">
-            <label>List ID (optional for some tests):</label>
-            <input type="text" name="list_id" value="<?= $_POST['list_id'] ?? '' ?>" placeholder="List ID">
+            <label>List ID:</label>
+            <input type="text" name="list_id" value="<?= $_POST['list_id'] ?? '' ?>" placeholder="XXXXXXXXXXXXXXXXXXX">
         </div>
         
         <div class="form-group">
-            <label>Campaign ID (for campaign-specific tests):</label>
-            <input type="text" name="campaign_id" value="<?= $_POST['campaign_id'] ?? '' ?>" placeholder="Campaign ID">
+            <label>Campaign ID:</label>
+            <input type="text" name="campaign_id" value="<?= $_POST['campaign_id'] ?? '' ?>" placeholder="XXXX">
         </div>
+
         <div class="form-group">
             <label>Test Email Address:</label>
-            <input type="email" name="test_email" value="<?= $_POST['test_email'] ?? '' ?>" placeholder="test@example.com">
+            <input type="text" name="test_email" value="<?= $_POST['test_email'] ?? '' ?>" placeholder="user@address.com">
         </div>
-        
-        <button type="submit" name="action" value="test_connection">Test Connection</button>
+
+        <button type="submit" name="action" value="test_connection" class="connection-test">Test Connection</button>
+        <hr>
+
+        <button type="submit" name="action" value="subscriber_status">Check Subscriber Status</button>
+
         
         <button type="submit" name="action" value="get_campaigns">Get Campaigns</button>
         <button type="submit" name="action" value="campaign_summary">Campaign Summary</button>
         <button type="submit" name="action" value="campaign_clicks">Campaign Clicks</button>
-
         <button type="submit" name="action" value="get_lists">Get All Lists</button>
-        <button type="submit" name="action" value="get_brands">Get All Brands</button>
-
-        <button type="submit" name="action" value="subscriber_status">Check Subscriber Status</button>
+        <!-- <button type="submit" name="action" value="get_brands">Get All Brands</button> -->
 
     </form>
 
+    
     <?php
     if ($_POST && !empty($_POST['api_url']) && !empty($_POST['api_key'])) {
         $api_url = rtrim($_POST['api_url'], '/');
@@ -144,6 +152,9 @@
         echo "</div>";
     }
     
+
+
+
     function sendy_request($url, $data) {
         echo "<p><strong>Trying URL:</strong> " . $url . "</p>"; // DEBUG LINE
         $ch = curl_init();
@@ -158,7 +169,7 @@
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
         curl_close($ch);
-        
+
         return [
             'http_code' => $http_code,
             'response' => $response,

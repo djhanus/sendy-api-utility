@@ -2,7 +2,7 @@
 
 [https://sendy.co/api](https://sendy.co/api)
 
-### Endpoints
+### API Endpoints
 
 - `your-sendy-url/api/subscribers/active-subscriber-count.php` - Gets subscriber count
 - `your-sendy-url/api/campaigns/get-campaigns.php` - Gets campaigns list
