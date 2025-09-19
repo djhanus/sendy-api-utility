@@ -52,7 +52,7 @@
         <button type="submit" name="action" value="subscriber_status">Check Subscriber Status</button>
         <button type="submit" name="action" value="get_lists">Get All Lists</button>
         <button type="submit" name="action" value="get_brands">Get All Brands</button>
-        <button type="submit" name="action" value="get_campaigns">Get Campaigns</button>
+        <!-- <button type="submit" name="action" value="get_campaigns">Get Campaigns</button> -->
         <!-- <button type="submit" name="action" value="campaign_summary">Campaign Summary</button> -->
         <!-- <button type="submit" name="action" value="campaign_clicks">Campaign Clicks</button> -->
   
