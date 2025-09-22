@@ -52,9 +52,10 @@
         <button type="submit" name="action" value="subscriber_status">Check Subscriber Status</button>
         <button type="submit" name="action" value="get_lists">Get All Lists</button>
         <button type="submit" name="action" value="get_brands">Get All Brands</button>
-        <!-- <button type="submit" name="action" value="get_campaigns">Get Campaigns</button> -->
-        <!-- <button type="submit" name="action" value="campaign_summary">Campaign Summary</button> -->
-        <!-- <button type="submit" name="action" value="campaign_clicks">Campaign Clicks</button> -->
+        <button type="submit" name="action" value="get_campaigns">Get Campaigns</button>
+        <button type="submit" name="action" value="campaign_summary">Campaign Summary</button>
+        <button type="submit" name="action" value="campaign_opens">Campaign Opens</button>
+        <button type="submit" name="action" value="campaign_clicks">Campaign Clicks</button>
   
 
     </form>
@@ -103,6 +104,17 @@
                     break;
                 }
                 $result = sendy_request($api_url . '/api/campaigns/summary.php', [
+                    'api_key' => $api_key,
+                    'campaign_id' => $campaign_id
+                ]);
+                break;
+                
+            case 'campaign_opens':
+                if(!$campaign_id) {
+                    echo "<p class='error'>Campaign ID required for this test</p>";
+                    break;
+                }
+                $result = sendy_request($api_url . '/api/campaigns/opens.php', [
                     'api_key' => $api_key,
                     'campaign_id' => $campaign_id
                 ]);
