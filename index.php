@@ -44,10 +44,10 @@
         </div>
 
         <button type="submit" name="action" value="get_campaigns">Get Campaigns##</button>
+        <button type="submit" name="action" value="enhanced_query">Campaign Analytics</button>
         <button type="submit" name="action" value="campaign_summary">Campaign Summary</button>
-        <button type="submit" name="action" value="campaign_opens">Campaign Opens</button>
-        <button type="submit" name="action" value="campaign_clicks">Campaign Clicks##</button>
-        <button type="submit" name="action" value="enhanced_query">Enhanced Query (Detailed Analytics)</button>
+        <button type="submit" name="action" value="campaign_opens">Campaign Opens (Geo/Locale)</button>
+        <button type="submit" name="action" value="campaign_clicks">Campaign Link Clicks</button>
 
         <div class="form-group">
             <label>Brand ID (for lists):</label>
@@ -92,9 +92,34 @@
                 break;
                 
             case 'get_campaigns':
-                $result = sendy_request($api_url . '/api/campaigns/get-campaigns.php', [
-                    'api_key' => $api_key
+                if(!isset($_POST['brand_id']) || empty($_POST['brand_id'])) {
+                    echo "<p class='error'>Brand ID required to get campaigns</p>";
+                    break;
+                }
+                echo "<p><strong>Getting campaigns for Brand ID:</strong> " . htmlspecialchars($_POST['brand_id']) . "</p>";
+                
+                // Use the reporting endpoint which can handle brand-based queries
+                $result = sendy_request($api_url . '/api/reporting/query.php', [
+                    'api_key' => $api_key,
+                    'brand_id' => $_POST['brand_id']
                 ]);
+                
+                // Format the response to show campaign list
+                if($result['http_code'] == 200 && !empty($result['response'])) {
+                    $json_data = json_decode($result['response'], true);
+                    if(json_last_error() === JSON_ERROR_NONE && isset($json_data['campaigns'])) {
+                        echo "<p class='success'>Found " . count($json_data['campaigns']) . " campaigns in this brand:</p>";
+                        echo "<h4>📋 Campaigns List:</h4>";
+                        foreach($json_data['campaigns'] as $campaign) {
+                            echo "<div class='campaign-item'>";
+                            echo "<strong>ID:</strong> " . $campaign['id'] . " | ";
+                            echo "<strong>Label:</strong> " . ($campaign['label'] ?: 'No label') . " | ";
+                            echo "<strong>Sent:</strong> " . $campaign['date_sent'] . " | ";
+                            echo "<strong>Total Sent:</strong> " . number_format($campaign['total_sent']);
+                            echo "</div><br>";
+                        }
+                    }
+                }
                 break;
 
             case 'subscriber_status':
@@ -137,30 +162,40 @@
                     echo "<p class='error'>Campaign ID required for this test</p>";
                     break;
                 }
-                echo "<p><strong>Debug:</strong> Testing campaign clicks for campaign ID: " . htmlspecialchars($campaign_id) . "</p>";
+                echo "<p><strong>Campaign Clicks:</strong> Getting link click data for campaign ID: " . htmlspecialchars($campaign_id) . "</p>";
                 
-                // First try the clicks endpoint
-                $result = sendy_request($api_url . '/api/campaigns/clicks.php', [
+                // Use the enhanced query endpoint to get detailed click data
+                $result = sendy_request($api_url . '/api/reporting/query.php', [
                     'api_key' => $api_key,
                     'campaign_id' => $campaign_id
                 ]);
                 
-                // If that fails, try alternative endpoints
-                if($result['http_code'] == 500 || $result['http_code'] == 404) {
-                    echo "<p class='warning'>Standard clicks endpoint failed. Trying alternative...</p>";
-                    
-                    // Try without .php extension
-                    $result2 = sendy_request($api_url . '/api/campaigns/clicks', [
-                        'api_key' => $api_key,
-                        'campaign_id' => $campaign_id
-                    ]);
-                    
-                    if($result2['http_code'] != 500 && $result2['http_code'] != 404) {
-                        $result = $result2;
-                        echo "<p class='success'>Alternative endpoint worked!</p>";
-                    } else {
-                        echo "<p class='info'>Note: Campaign summary shows 40 clicks, but detailed click data endpoint may not be available in your Sendy version.</p>";
-                        echo "<p class='info'>Some Sendy installations don't have the clicks detail endpoint - only the summary counts.</p>";
+                if($result['http_code'] == 200 && !empty($result['response'])) {
+                    $json_data = json_decode($result['response'], true);
+                    if(json_last_error() === JSON_ERROR_NONE && isset($json_data['campaigns'])) {
+                        $campaign = $json_data['campaigns'][0]; // Get first campaign
+                        
+                        if(isset($campaign['links']) && is_array($campaign['links'])) {
+                            // Return only the links array in clean JSON format
+                            $links_only = $campaign['links'];
+                            echo "<p class='success'>Link clicks data retrieved successfully!</p>";
+                            
+                            // Override the result to show only links data
+                            $result = [
+                                'http_code' => 200,
+                                'response' => json_encode($links_only, JSON_PRETTY_PRINT),
+                                'error' => null,
+                                'parsed' => $links_only
+                            ];
+                        } else {
+                            echo "<p class='info'>No link click data found for this campaign.</p>";
+                            $result = [
+                                'http_code' => 200,
+                                'response' => '[]',
+                                'error' => null,
+                                'parsed' => []
+                            ];
+                        }
                     }
                 }
                 break;
@@ -241,7 +276,12 @@
         }
         
         if(isset($result)) {
-            echo "<pre>" . htmlspecialchars(print_r($result, true)) . "</pre>";
+            // Special handling for campaign_clicks to show only the JSON
+            if($action === 'campaign_clicks' && $result['http_code'] == 200) {
+                echo "<pre>" . htmlspecialchars($result['response']) . "</pre>";
+            } else {
+                echo "<pre>" . htmlspecialchars(print_r($result, true)) . "</pre>";
+            }
         }
         
         echo "</div>";
