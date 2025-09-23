@@ -43,7 +43,7 @@
             <input type="text" name="campaign_id" value="<?= $_POST['campaign_id'] ?? '' ?>" placeholder="XXXX">
         </div>
 
-        <button type="submit" name="action" value="get_campaigns">Get Campaigns##</button>
+        <button type="submit" name="action" value="get_campaigns">Get All Campaigns</button>
         <button type="submit" name="action" value="enhanced_query">Campaign Analytics</button>
         <button type="submit" name="action" value="campaign_summary">Campaign Summary</button>
         <button type="submit" name="action" value="campaign_opens">Campaign Opens (Geo/Locale)</button>
