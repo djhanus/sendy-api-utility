@@ -104,20 +104,36 @@
                     'brand_id' => $_POST['brand_id']
                 ]);
                 
-                // Format the response to show campaign list
+                // Format the response to show a clean campaign list only
                 if($result['http_code'] == 200 && !empty($result['response'])) {
                     $json_data = json_decode($result['response'], true);
                     if(json_last_error() === JSON_ERROR_NONE && isset($json_data['campaigns'])) {
                         echo "<p class='success'>Found " . count($json_data['campaigns']) . " campaigns in this brand:</p>";
                         echo "<h4>📋 Campaigns List:</h4>";
+                        
+                        // Create a simplified campaigns array
+                        $simplified_campaigns = [];
                         foreach($json_data['campaigns'] as $campaign) {
-                            echo "<div class='campaign-item'>";
-                            echo "<strong>ID:</strong> " . $campaign['id'] . " | ";
-                            echo "<strong>Label:</strong> " . ($campaign['label'] ?: 'No label') . " | ";
-                            echo "<strong>Sent:</strong> " . $campaign['date_sent'] . " | ";
-                            echo "<strong>Total Sent:</strong> " . number_format($campaign['total_sent']);
-                            echo "</div><br>";
+                            $simplified_campaigns[] = [
+                                'id' => $campaign['id'],
+                                'label' => $campaign['label'] ?: 'No label',
+                                'date_sent' => $campaign['date_sent'],
+                                'total_sent' => $campaign['total_sent'],
+                                'unique_opens' => $campaign['unique_opens'],
+                                'total_clicks' => $campaign['total_clicks']
+                            ];
                         }
+                        
+                        // Override result to show only simplified data
+                        $result = [
+                            'http_code' => 200,
+                            'response' => json_encode($simplified_campaigns, JSON_PRETTY_PRINT),
+                            'error' => null,
+                            'parsed' => $simplified_campaigns
+                        ];
+                        
+                        // Don't show the detailed formatting - let the main output handle it
+                        echo "<p class='info'>Showing simplified campaign data below:</p>";
                     }
                 }
                 break;
