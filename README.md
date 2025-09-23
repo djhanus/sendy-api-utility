@@ -6,6 +6,8 @@ A simple utility for testing the Sendy API connection and endpoints. A prototype
 
 ![Screenshot of Sendy API Utility](screenshot.png)
 
+---
+
 ### API Endpoints
 
 - `/api/subscribers/active-subscriber-count.php`
