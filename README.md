@@ -1,6 +1,5 @@
 # Sendy API Utility
-
-A simple utility for testing the Sendy API connection and endpoints. A prototype tool that serves as a foundation for 
+A utility for testing both the official Sendy API endpoints and additional extended endpoints provided by the [sendy-api-extension fork](https://github.com/djhanus/sendy-api-extension). This tool serves as a foundation for building analytical dashboards or plugins (such as for WordPress) by leveraging and expanding upon the capabilities of the core Sendy API.
 
 [https://sendy.co/api](https://sendy.co/api)
 
